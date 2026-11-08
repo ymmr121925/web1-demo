@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    * {
+      box-sizing: border-box;
+
+
+      
+    }
+    .father {
+      background: pink;
+
+      display: flex;
+      flex-wrap: wrap; /*允许换行*/
+      justify-content: center;
+      align-content: space-around;
+      
+
+
+
+
+
+
+      height: 1200px;
+      gap: 10px;
+    }
+
+
+
+
+    .son {
+      width: 300px;
+      height: 300px;
+
+
+
+
+
+      background-color: brown;
+      border: 3px solid blue;
+    }
+  </style>
+
+  <body>
+    注：内联样式优先度最高。内部样式与外部样式一样高，两者谁在后面谁就覆盖前面
+
+    <div class="father">
+      <div class="son son1" style="position: relative; left: 10px">
+        我是一号块级字符
+      </div>
+      <div class="son son2">我是二号块级字符</div>
+      <div class="son son3">我是三号块级字符</div>
+      <div class="son son4">我是四号块级字符</div>
+      <div class="son son5">我是五号块级字符</div>
+      <div class="son son6">我是六号块级字符</div>
+      <div class="son son7">我是七号块级字符</div>
+      <div class="son son8">我是八号块级字符</div>
+      <div class="son son9">我是九号块级字符</div>
+    </div>
+  </body>
+</html>

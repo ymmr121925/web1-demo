@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web图鉴</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #f7f7f7;
+      font-family: "Microsoft Yahei", sans-serif;
+    }
+    .header {
+      height: 60px;
+      background: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+    .logo {
+      font-size: 22px;
+      font-weight: bold;
+      color: #ff385c;
+    }
+    .login-btn {
+      padding: 6px 16px;
+      border: none;
+      background: #ff385c;
+      color: white;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+    .container {
+      display: flex;
+    }
+    .sidebar {
+      width: 180px;
+      height: calc(100vh - 60px);
+      background: #fff;
+      padding-top: 30px;
+      position: fixed;
+    }
+    .nav-item {
+      display: block;
+      width: 100%;
+      padding: 12px 24px;
+      text-decoration: none;
+      color: #333;
+    }
+    .nav-item:hover {
+      background-color: #ffe8eb;
+      color: #ff385c;
+    }
+    .content {
+      margin-left: 180px;
+      margin-top: 20px;
+      padding: 0 20px;
+      width: calc(100% - 180px);
+    }
+    .card-wrap {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 18px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: transform 0.25s;
+    }
+    .card:hover {
+      transform: scale(1.03);
+    }
+    .card img {
+      width: 100%;
+      height: 170px;
+      object-fit: cover;
+    }
+    .card h3, .card p, .card .info {
+      padding: 0 10px;
+      margin: 8px 0;
+    }
+    .card h3 {
+      font-size: 15px;
+    }
+    .card p {
+      font-size: 13px;
+      color: #666;
+    }
+    .card .info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #999;
+      padding-bottom:10px;
+    }
+    .modal-mask {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 99;
+    }
+    .login-modal {
+      width: 360px;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+    }
+    .login-modal h2 {
+      text-align: center;
+      margin-bottom: 24px;
+      color:#333;
+    }
+    .form-item {
+      margin-bottom:18px;
+    }
+    .form-item label {
+      display: block;
+      margin-bottom: 6px;
+      font-size:14px;
+    }
+    .form-item input {
+      width: 100%;
+      padding: 10px;
+      border:1px solid #ddd;
+      border-radius:6px;
+    }
+    .submit-btn {
+      width:100%;
+      padding:10px;
+      background: #ff385c;
+      color:white;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+    }
+    .detail-modal {
+      width: 420px;
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .detail-modal img {
+      width:100%;
+      height:240px;
+      object-fit: cover;
+      border-radius:8px;
+    }
+    .detail-modal h3 {
+      margin:12px 0 8px;
+    }
+    .detail-modal p {
+      color:#555;
+      line-height:1.6;
+    }
+    .detail-info {
+      display:flex;
+      justify-content: space-between;
+      margin-top:12px;
+      color:#888;
+      font-size:14px;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="logo">Web图鉴</div>
+    <button class="login-btn" id="loginBtn">登录</button>
+  </header>
+
+  <div class="container">
+    <nav class="sidebar">
+      <a href="#" class="nav-item">首页</a>
+      <a href="#" class="nav-item">发现</a>
+      <a href="#" class="nav-item">收藏</a>
+      <a href="#" class="nav-item">关于</a>
+    </nav>
+    <main class="content">
+      <div class="card-wrap" id="cardWrap"></div>
+    </main>
+  </div>
+
+  <div class="modal-mask" id="loginMask">
+    <div class="login-modal">
+      <h2>账号登录</h2>
+      <form id="loginForm">
+        <div class="form-item">
+          <label>用户名</label>
+          <input type="text" id="username" required>
+        </div>
+        <div class="form-item">
+          <label>密码</label>
+          <input type="password" id="pwd" required>
+        </div>
+        <button type="submit" class="submit-btn">登录</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-mask" id="detailMask">
+    <div class="detail-modal">
+      <img id="detailImg" src="" alt="">
+      <h3 id="detailTitle"></h3>
+      <p id="detailDesc"></p>
+      <div class="detail-info">
+        <span id="detailAuthor"></span>
+        <span id="detailTime"></span>
+      </div>
+    </div>
+  </div>
+
+<script>
+// 注意：这里我们把json数据直接写在JS里面，不再单独data.json，避免路径麻烦！
+const postList = [
+  {id:1,title:"猫咪打卡",desc:"楼下遇到的小猫咪，乖乖的不怕人",img:"https://picsum.photos/300/300?random=1",author:"小明",time:"2026-10-01"},
+  {id:2,title:"校园晚霞",desc:"傍晚操场的晚霞超好看，适合散步",img:"https://picsum.photos/300/300?random=2",author:"小红",time:"2026-10-02"},
+  {id:3,title:"美食分享",desc:"食堂新开的窗口，味道很不错",img:"https://picsum.photos/300/300?random=3",author:"阿华",time:"2026-10-03"},
+  {id:4,title:"路边小花",desc:"路边随手拍，不起眼但是很好看",img:"https://picsum.photos/300/300?random=4",author:"小李",time:"2026-10-04"},
+  {id:5,title:"图书馆日常",desc:"安静学习的一天，效率很高",img:"https://picsum.photos/300/300?random=5",author:"小张",time:"2026-10-05"}
+];
+
+const cardWrap = document.getElementById('cardWrap');
+const loginBtn = document.getElementById('loginBtn');
+const loginMask = document.getElementById('loginMask');
+const loginForm = document.getElementById('loginForm');
+const detailMask = document.getElementById('detailMask');
+const detailImg = document.getElementById('detailImg');
+const detailTitle = document.getElementById('detailTitle');
+const detailDesc = document.getElementById('detailDesc');
+const detailAuthor = document.getElementById('detailAuthor');
+const detailTime = document.getElementById('detailTime');
+
+// 渲染卡片
+postList.forEach(item => {
+  const cardHtml = `
+    <div class="card" data-id="${item.id}">
+      <img src="${item.img}" alt="${item.title}">
+      <h3>${item.title}</h3>
+      <p>${item.desc}</p>
+      <div class="info">
+        <span>${item.author}</span>
+        <span>${item.time}</span>
+      </div>
+    </div>
+  `
+  cardWrap.innerHTML += cardHtml;
+})
+bindCardClick();
+
+function bindCardClick(){
+  const allCard = document.querySelectorAll('.card');
+  allCard.forEach(card => {
+    card.onclick = function(){
+      const cid = Number(this.dataset.id);
+      const target = postList.find(item => item.id === cid);
+      detailImg.src = target.img;
+      detailTitle.innerText = target.title;
+      detailDesc.innerText = target.desc;
+      detailAuthor.innerText = target.author;
+      detailTime.innerText = target.time;
+      detailMask.style.display = 'flex';
+    }
+  })
+}
+
+loginBtn.onclick = function(){
+  loginMask.style.display = 'flex';
+}
+loginMask.onclick = function(e){
+  if(e.target === loginMask) loginMask.style.display = 'none';
+}
+detailMask.onclick = function(e){
+  if(e.target === detailMask) detailMask.style.display = 'none';
+}
+loginForm.onsubmit = function(e){
+  e.preventDefault();
+  alert("登录成功！");
+  loginForm.reset();
+  loginMask.style.display = 'none';
+}
+</script>
+</body>
+</html>

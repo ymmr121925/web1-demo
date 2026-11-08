@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>卡片综合作业</title>
+  <style>
+    /* 在这里写你的CSS！ */
+*{
+margin:0px ;
+padding: 0px;
+box-sizing: border-box;
+}
+body{
+background-color: aqua;
+min-height: 100vh;
+}
+.container{
+height: 500px;
+width: 1000px;
+justify-content: space-around;
+display: flex;
+background-color: beige;
+border: 1px solid #cccccc00;
+border-radius:8px;
+position: relative;
+gap: 20px;
+}
+.card {
+  width:200px;
+  height:260px;
+  background:#fff;
+  border:1px solid #ccc;  /*边框*/
+  border-radius:8px;      /*圆角*/
+  position:relative;
+transition: all 0.3s;
+margin-top: 50px;
+}
+.card:hover{
+  transform: scale(1.05);
+  z-index:9; /* 提升层级，放大后不会被旁边卡片盖住 */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* 悬浮阴影，更好看 */
+}
+/* 卡片的伪元素装饰方块 */
+.card::before{
+  content:""; /* 必须写！空字符串 */
+  width:40px;
+  height:40px;
+  background:#77aaff; /*方块颜色，蓝色 */
+  position:absolute;
+  top:0; /*贴到卡片顶部 */
+  left:0; /*贴到卡片左边 */
+  border-radius: 0 0 8px 0; /*右下角圆角，和卡片圆角匹配 */
+  transition: background 0.3s; /*颜色过渡动画 */
+}
+/* 鼠标悬浮卡片，装饰方块变色 */
+.card:hover::before{
+  background:#ff7777; /*悬浮变成红色 */
+}
+.card input{
+  margin-top: 30px; /* 上方留出30px空白，输入框往下移动 */
+  width: 80%;
+  height: 30px;
+  border:1px solid #aaa;
+  border-radius: 3px;
+}
+.card:active{
+  transform: scale(1.02);
+}
+.card input:focus{
+  outline:none;
+  border:2px solid #77aaff;
+}
+
+
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="card">商品1
+    <input type="text" placeholder="输入内容">
+    </div>
+
+    <div class="card">商品2
+    <input type="text" placeholder="输入内容">  
+    </div>
+
+    <div class="card">商品3
+    <input type="text" placeholder="输入内容">
+    </div>
+  </div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

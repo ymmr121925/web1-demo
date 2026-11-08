@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Web图鉴</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Microsoft Yahei", sans-serif;
+      }
+      body {
+        background-color: #f4f4f4;
+      }
+      /* 顶部栏 */
+      .top_bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 24px;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      .page_title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #ff4466;
+      }
+      .login_button {
+        padding: 6px 16px;
+        border: none;
+        background: #409eff;
+        color: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      /* 外层容器：侧边导航 + 主内容 */
+      .wrap_box {
+        display: flex;
+      }
+      /* 侧边导航 */
+      .side_nav {
+        width: 180px;
+        background: #fff;
+        min-height: calc(100vh - 64px);
+        padding-top: 30px;
+      }
+      .nav_item {
+        display: block;
+        padding: 12px 24px;
+        text-decoration: none;
+        color: #333;
+        font-size: 16px;
+      }
+      .nav_item:hover {
+        background-color: #f0f7ff;
+        color: #409eff;
+      }
+      /* 主内容区域 */
+      .main_content {
+        flex: 1;
+        padding: 30px;
+      }
+      .card_container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, 220px);
+        gap: 24px;
+      }
+      /* 卡片样式 */
+      .card {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+      .card:hover {
+        transform: translateY(-4px);
+      }
+      .card img {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+      }
+      .card h3 {
+        padding: 12px 12px 6px;
+        font-size: 18px;
+      }
+      .card p {
+        padding: 0 12px 10px;
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+      }
+      .card_bottom_info {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 12px 14px;
+        font-size: 13px;
+        color: #999;
+      }
+      /* 弹窗遮罩层 */
+      .modal_mask {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+      }
+      /* 登录弹窗 */
+      .login_modal {
+        width: 360px;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+      }
+      .login_modal h2 {
+        text-align: center;
+        margin-bottom: 24px;
+        font-size: 20px;
+      }
+      .form_item {
+        margin-bottom: 18px;
+      }
+      .form_item label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 14px;
+      }
+      .form_item input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      .submit_button {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        background: #409eff;
+        color: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 15px;
+      }
+      /* 详情弹窗 */
+      .detail_modal {
+        width: 520px;
+        background: white;
+        padding: 24px;
+        border-radius: 10px;
+      }
+      .detail_modal img {
+        width: 100%;
+        border-radius: 8px;
+        margin-bottom: 16px;
+      }
+      .detail_modal h3 {
+        margin-bottom: 10px;
+      }
+      .detail_modal p {
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 16px;
+      }
+      .detail_bottom_info {
+        display: flex;
+        justify-content: space-between;
+        color: #888;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 顶部栏：标题 + 登录按钮 -->
+    <header class="top_bar">
+      <div class="page_title">Web图鉴</div>
+      <button class="login_button" id="login_btn">登录</button>
+    </header>
+
+    <!-- 外层容器：侧边导航 + 主内容 -->
+    <div class="wrap_box">
+      <!-- 侧边导航 -->
+      <nav class="side_nav">
+        <a href="#" class="nav_item">首页</a>
+        <a href="#" class="nav_item">发现</a>
+        <a href="#" class="nav_item">收藏</a>
+        <a href="#" class="nav_item">关于</a>
+      </nav>
+      <!-- 主内容区 -->
+      <main class="main_content">
+        <div class="card_container" id="card_wrap"></div>
+      </main>
+    </div>
+
+    <!-- 登录弹窗 -->
+    <div class="modal_mask" id="login_mask">
+      <div class="login_modal">
+        <h2>账号登录</h2>
+        <form id="login_form">
+          <div class="form_item">
+            <label>用户名</label>
+            <input type="text" id="user_name" required />
+          </div>
+          <div class="form_item">
+            <label>密码</label>
+            <input type="password" id="user_pwd" required />
+          </div>
+          <button type="submit" class="submit_button">登录</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 详情弹窗 -->
+    <div class="modal_mask" id="detail_mask">
+      <div class="detail_modal">
+        <img id="detail_img" src="" alt="" />
+        <h3 id="detail_title"></h3>
+        <p id="detail_desc"></p>
+        <div class="detail_bottom_info">
+          <span id="detail_author"></span>
+          <span id="detail_time"></span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // 卡片数据源（固定id图片，刷新不会变）
+      const postList = [
+        {
+          id: 1,
+          title: "猫咪打卡",
+          desc: "楼下遇到的小猫咪，乖乖的不怕人",
+          img: "https://picsum.photos/id/40/300/300",
+          author: "小明",
+          time: "2026-10-01",
+        },
+        {
+          id: 2,
+          title: "校园晚霞",
+          desc: "傍晚操场的晚霞超好看，适合散步",
+          img: "https://picsum.photos/id/110/300/300",
+          author: "小红",
+          time: "2026-10-02",
+        },
+        {
+          id: 3,
+          title: "美食分享",
+          desc: "食堂新开的窗口，味道很不错",
+          img: "https://picsum.photos/id/292/300/300",
+          author: "阿华",
+          time: "2026-10-03",
+        },
+        {
+          id: 4,
+          title: "路边小花",
+          desc: "路边随手拍，不起眼但是很好看",
+          img: "https://picsum.photos/id/106/300/300",
+          author: "小李",
+          time: "2026-10-04",
+        },
+        {
+          id: 5,
+          title: "图书馆日常",
+          desc: "安静学习的一天，效率很高",
+          img: "https://picsum.photos/id/100/300/300",
+          author: "小张",
+          time: "2026-10-05",
+        },
+      ];
+
+      // 获取DOM元素
+      const cardWrap = document.querySelector("#card_wrap");
+      const loginBtn = document.querySelector("#login_btn");
+      const loginMask = document.querySelector("#login_mask");
+      const loginForm = document.querySelector("#login_form");
+      const detailMask = document.querySelector("#detail_mask");
+      const detailImg = document.querySelector("#detail_img");
+      const detailTitle = document.querySelector("#detail_title");
+      const detailDesc = document.querySelector("#detail_desc");
+      const detailAuthor = document.querySelector("#detail_author");
+      const detailTime = document.querySelector("#detail_time");
+
+      // 渲染卡片函数
+      function renderCards() {
+        postList.forEach((item) => {
+          // 创建卡片外层
+          const card = document.createElement("div");
+          card.className = "card";
+          card.dataset.id = item.id;
+
+          // 图片
+          const img = document.createElement("img");
+          img.src = item.img;
+          img.alt = item.title;
+
+          // 标题
+          const h3 = document.createElement("h3");
+          h3.textContent = item.title;
+
+          // 描述
+          const p = document.createElement("p");
+          p.textContent = item.desc;
+
+          // 底部作者时间容器
+          const infoBox = document.createElement("div");
+          infoBox.className = "card_bottom_info";
+
+          const spanAuthor = document.createElement("span");
+          spanAuthor.textContent = item.author;
+          const spanTime = document.createElement("span");
+          spanTime.textContent = item.time;
+
+          infoBox.appendChild(spanAuthor);
+          infoBox.appendChild(spanTime);
+
+          // 组装卡片
+          card.appendChild(img);
+          card.appendChild(h3);
+          card.appendChild(p);
+          card.appendChild(infoBox);
+
+          // 卡片点击事件：打开详情弹窗
+          card.addEventListener("click", () => {
+            detailImg.src = item.img;
+            detailTitle.textContent = item.title;
+            detailDesc.textContent = item.desc;
+            detailAuthor.textContent = item.author;
+            detailTime.textContent = item.time;
+            detailMask.style.display = "flex";
+          });
+
+          cardWrap.appendChild(card);
+        });
+      }
+
+      // 登录按钮点击：弹出登录弹窗
+      loginBtn.addEventListener("click", () => {
+        loginMask.style.display = "flex";
+      });
+
+      // 登录表单提交
+      loginForm.onsubmit = function (e) {
+        e.preventDefault();
+        const username = document.querySelector("#user_name").value;
+        const pwd = document.querySelector("#user_pwd").value;
+        alert(`用户名：${username}\n密码：${pwd}\n登录成功！`);
+        loginMask.style.display = "none";
+        loginForm.reset();
+      };
+
+      // 点击遮罩关闭弹窗
+      loginMask.addEventListener("click", (e) => {
+        if (e.target === loginMask) loginMask.style.display = "none";
+      });
+      detailMask.addEventListener("click", (e) => {
+        if (e.target === detailMask) detailMask.style.display = "none";
+      });
+
+      // 页面加载完成，渲染卡片
+      renderCards();
+    </script>
+  </body>
+</html>
